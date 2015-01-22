@@ -32,6 +32,16 @@ except:
 from cmdbot.configs import IniFileConfiguration
 from cmdbot.decorators import direct
 
+def decode(bytes):
+    try:
+        text = bytes.decode('utf-8')
+    except UnicodeDecodeError:
+        try:
+            text = bytes.decode('iso-8859-1')
+        except UnicodeDecodeError:
+            text = bytes.decode('cp1252')
+    return text
+
 
 class Line(object):
     "IRC line"
@@ -207,7 +217,7 @@ class Bot(object):
         readbuffer = ''
         try:
             while 1:
-                readbuffer = readbuffer + self.s.recv(1024).decode('utf')
+                readbuffer = readbuffer + decode(self.s.recv(1024))
                 temp = readbuffer.split("\n")  # string.split
                 readbuffer = temp.pop()
                 for raw_line in temp:
